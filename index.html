@@ -1,0 +1,540 @@
+// ============================================================
+// AngoMarket — Site e-Commerce pour Angola
+// Langue : Français (interface multilingue FR/PT/EN)
+// Couleurs principales : Rouge (#E01E1E), Orange (#F26522), Noir (#1A1A1A)
+// ============================================================
+
+import { useState, useMemo } from "react";
+
+// ── Traductions (dictionnaire multilingue) ──────────────────
+const traductions = {
+  fr: {
+    accueil: "Accueil",
+    publier: "Publier une annonce",
+    recherche: "Recherche",
+    profil: "Profil vendeur",
+    slogan: "Achetez. Vendez. Promouvez. Angola.",
+    rechercherPlaceholder: "Rechercher un produit, service...",
+    rechercherBtn: "Rechercher",
+    categoriesTitle: "Catégories populaires",
+    annoncesSpot: "Annonces sponsorisées",
+    annoncesRecentes: "Annonces récentes",
+    filtrePrix: "Prix max (Kz)",
+    filtreVille: "Ville",
+    filtreEtat: "État",
+    filtreCategorie: "Catégorie",
+    toutesVilles: "Toutes les villes",
+    toutesCategories: "Toutes catégories",
+    toutEtat: "Tous",
+    neuf: "Neuf",
+    occasion: "Occasion",
+    service: "Service",
+    appeler: "Appeler",
+    whatsapp: "WhatsApp",
+    message: "Message",
+    publierTitre: "Publier une annonce",
+    titreAnnonce: "Titre de l'annonce",
+    description: "Description",
+    prix: "Prix (Kz)",
+    ville: "Ville",
+    categorie: "Catégorie",
+    etat: "État du produit",
+    telephone: "Numéro WhatsApp",
+    photo: "Photo du produit",
+    publierBtn: "Publier l'annonce",
+    sponsoriser: "Sponsoriser cette annonce",
+    profilTitre: "Profil vendeur",
+    noteMoyenne: "Note moyenne",
+    avis: "avis",
+    produitsMis: "Annonces publiées",
+    premium: "Passer Premium",
+    premiumDesc: "Mettez vos annonces en avant et attirez plus de clients",
+    abonnement: "Abonnement Premium",
+    sponsorAnn: "Annonce sponsorisée",
+    langue: "Langue",
+    hero1: "La première marketplace angolaise",
+    hero2: "Achetez, vendez et promouvez vos produits partout en Angola.",
+    voirAnnonces: "Voir les annonces",
+    publierMaintenant: "Publier maintenant",
+    commentaires: "Commentaires",
+    laisserAvis: "Laisser un avis",
+    envoyer: "Envoyer",
+    annoncePub: "Annonce publiée avec succès !",
+    fermer: "Fermer",
+    categoriesPop: ["Électronique", "Automobile", "Immobilier", "Mode", "Services", "Alimentation", "Maison & Jardin", "Emploi"],
+    villes: ["Luanda", "Benguela", "Huambo", "Lubango", "Malanje", "Cabinda", "Uíge", "Kuito"],
+    premium_features: ["Annonce en tête de liste", "Badge vendeur vérifié", "Statistiques de vues", "Support prioritaire"],
+    footer_copy: "© 2025 AngoMarket. Tous droits réservés.",
+  },
+  pt: {
+    accueil: "Início",
+    publier: "Publicar anúncio",
+    recherche: "Pesquisa",
+    profil: "Perfil vendedor",
+    slogan: "Compre. Venda. Promova. Angola.",
+    rechercherPlaceholder: "Pesquisar produto, serviço...",
+    rechercherBtn: "Pesquisar",
+    categoriesTitle: "Categorias populares",
+    annoncesSpot: "Anúncios patrocinados",
+    annoncesRecentes: "Anúncios recentes",
+    filtrePrix: "Preço máx (Kz)",
+    filtreVille: "Cidade",
+    filtreEtat: "Estado",
+    filtreCategorie: "Categoria",
+    toutesVilles: "Todas as cidades",
+    toutesCategories: "Todas categorias",
+    toutEtat: "Todos",
+    neuf: "Novo",
+    occasion: "Usado",
+    service: "Serviço",
+    appeler: "Ligar",
+    whatsapp: "WhatsApp",
+    message: "Mensagem",
+    publierTitre: "Publicar um anúncio",
+    titreAnnonce: "Título do anúncio",
+    description: "Descrição",
+    prix: "Preço (Kz)",
+    ville: "Cidade",
+    categorie: "Categoria",
+    etat: "Estado do produto",
+    telephone: "Número WhatsApp",
+    photo: "Foto do produto",
+    publierBtn: "Publicar anúncio",
+    sponsoriser: "Patrocinar este anúncio",
+    profilTitre: "Perfil vendedor",
+    noteMoyenne: "Nota média",
+    avis: "avaliações",
+    produitsMis: "Anúncios publicados",
+    premium: "Tornar Premium",
+    premiumDesc: "Destaque seus anúncios e atraia mais clientes",
+    abonnement: "Assinatura Premium",
+    sponsorAnn: "Anúncio patrocinado",
+    langue: "Idioma",
+    hero1: "O primeiro marketplace angolano",
+    hero2: "Compre, venda e promova seus produtos em todo Angola.",
+    voirAnnonces: "Ver anúncios",
+    publierMaintenant: "Publicar agora",
+    commentaires: "Comentários",
+    laisserAvis: "Deixar avaliação",
+    envoyer: "Enviar",
+    annoncePub: "Anúncio publicado com sucesso!",
+    fermer: "Fechar",
+    categoriesPop: ["Electrónica", "Automóvel", "Imóveis", "Moda", "Serviços", "Alimentação", "Casa & Jardim", "Emprego"],
+    villes: ["Luanda", "Benguela", "Huambo", "Lubango", "Malanje", "Cabinda", "Uíge", "Kuito"],
+    premium_features: ["Anúncio no topo da lista", "Selo de vendedor verificado", "Estatísticas de visualizações", "Suporte prioritário"],
+    footer_copy: "© 2025 AngoMarket. Todos os direitos reservados.",
+  },
+  en: {
+    accueil: "Home",
+    publier: "Post an Ad",
+    recherche: "Search",
+    profil: "Seller Profile",
+    slogan: "Buy. Sell. Promote. Angola.",
+    rechercherPlaceholder: "Search for a product, service...",
+    rechercherBtn: "Search",
+    categoriesTitle: "Popular Categories",
+    annoncesSpot: "Sponsored Ads",
+    annoncesRecentes: "Recent Ads",
+    filtrePrix: "Max Price (Kz)",
+    filtreVille: "City",
+    filtreEtat: "Condition",
+    filtreCategorie: "Category",
+    toutesVilles: "All cities",
+    toutesCategories: "All categories",
+    toutEtat: "All",
+    neuf: "New",
+    occasion: "Used",
+    service: "Service",
+    appeler: "Call",
+    whatsapp: "WhatsApp",
+    message: "Message",
+    publierTitre: "Post an Ad",
+    titreAnnonce: "Ad Title",
+    description: "Description",
+    prix: "Price (Kz)",
+    ville: "City",
+    categorie: "Category",
+    etat: "Product Condition",
+    telephone: "WhatsApp Number",
+    photo: "Product Photo",
+    publierBtn: "Post Ad",
+    sponsoriser: "Sponsor this ad",
+    profilTitre: "Seller Profile",
+    noteMoyenne: "Average Rating",
+    avis: "reviews",
+    produitsMis: "Published Ads",
+    premium: "Go Premium",
+    premiumDesc: "Boost your ads and attract more customers",
+    abonnement: "Premium Subscription",
+    sponsorAnn: "Sponsored Ad",
+    langue: "Language",
+    hero1: "Angola's first marketplace",
+    hero2: "Buy, sell and promote your products all across Angola.",
+    voirAnnonces: "View Ads",
+    publierMaintenant: "Post Now",
+    commentaires: "Reviews",
+    laisserAvis: "Leave a review",
+    envoyer: "Send",
+    annoncePub: "Ad published successfully!",
+    fermer: "Close",
+    categoriesPop: ["Electronics", "Cars", "Real Estate", "Fashion", "Services", "Food", "Home & Garden", "Jobs"],
+    villes: ["Luanda", "Benguela", "Huambo", "Lubango", "Malanje", "Cabinda", "Uíge", "Kuito"],
+    premium_features: ["Top listing placement", "Verified seller badge", "View statistics", "Priority support"],
+    footer_copy: "© 2025 AngoMarket. All rights reserved.",
+  },
+};
+
+// ── Données fictives des annonces ───────────────────────────
+const annoncesInitiales = [
+  {
+    id: 1,
+    titre: "iPhone 14 Pro - Très bon état",
+    prix: 350000,
+    ville: "Luanda",
+    categorie: "Électronique",
+    etat: "occasion",
+    vendeur: "Carlos Mendes",
+    telephone: "244923456789",
+    note: 4.7,
+    avis: 32,
+    sponsorise: true,
+    emoji: "📱",
+    description: "iPhone 14 Pro 256GB, couleur noir. Quelques micro-rayures, fonctionne parfaitement.",
+  },
+  {
+    id: 2,
+    titre: "Toyota Hilux 2019 - Automatique",
+    prix: 12500000,
+    ville: "Benguela",
+    categorie: "Automobile",
+    etat: "occasion",
+    vendeur: "João Silva",
+    telephone: "244912345678",
+    note: 4.9,
+    avis: 17,
+    sponsorise: true,
+    emoji: "🚗",
+    description: "Toyota Hilux double cabine, essence, 4x4, climatisation. Kilométrage 78000 km.",
+  },
+  {
+    id: 3,
+    titre: "Chauffeur privé disponible - Luanda",
+    prix: 15000,
+    ville: "Luanda",
+    categorie: "Services",
+    etat: "service",
+    vendeur: "Miguel António",
+    telephone: "244934567890",
+    note: 4.5,
+    avis: 48,
+    sponsorise: false,
+    emoji: "🚕",
+    description: "Chauffeur expérimenté, disponible 24h/24. Véhicule propre et climatisé.",
+  },
+  {
+    id: 4,
+    titre: "Appartement T3 - Talatona",
+    prix: 1800000,
+    ville: "Luanda",
+    categorie: "Immobilier",
+    etat: "neuf",
+    vendeur: "Ana Ferreira",
+    telephone: "244945678901",
+    note: 4.8,
+    avis: 12,
+    sponsorise: false,
+    emoji: "🏠",
+    description: "Bel appartement T3 à Talatona, 2ème étage, gardiennage 24h.",
+  },
+  {
+    id: 5,
+    titre: "Électricien professionnel",
+    prix: 5000,
+    ville: "Huambo",
+    categorie: "Services",
+    etat: "service",
+    vendeur: "Pedro Lopes",
+    telephone: "244956789012",
+    note: 4.3,
+    avis: 27,
+    sponsorise: false,
+    emoji: "⚡",
+    description: "Installations électriques, dépannage, tableau électrique. Devis gratuit.",
+  },
+  {
+    id: 6,
+    titre: "Samsung 65\" QLED 4K - Neuf",
+    prix: 420000,
+    ville: "Luanda",
+    categorie: "Électronique",
+    etat: "neuf",
+    vendeur: "Maria Santos",
+    telephone: "244967890123",
+    note: 5.0,
+    avis: 8,
+    sponsorise: false,
+    emoji: "📺",
+    description: "Téléviseur Samsung QLED 65 pouces, 4K, Smart TV, garantie 2 ans.",
+  },
+  {
+    id: 7,
+    titre: "Mécanicien auto - Luanda",
+    prix: 8000,
+    ville: "Luanda",
+    categorie: "Services",
+    etat: "service",
+    vendeur: "Rui Carvalho",
+    telephone: "244978901234",
+    note: 4.6,
+    avis: 54,
+    sponsorise: false,
+    emoji: "🔧",
+    description: "Mécanique générale, vidange, freins, diagnostic électronique.",
+  },
+  {
+    id: 8,
+    titre: "Robe de soirée - Grande marque",
+    prix: 45000,
+    ville: "Benguela",
+    categorie: "Mode",
+    etat: "neuf",
+    vendeur: "Lucia Neto",
+    telephone: "244989012345",
+    note: 4.4,
+    avis: 19,
+    sponsorise: false,
+    emoji: "👗",
+    description: "Robe longue de soirée, taille M, couleur bordeaux, jamais portée.",
+  },
+];
+
+// ── Icônes SVG légères ──────────────────────────────────────
+const IconeRecherche = () => (
+  <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5">
+    <circle cx="11" cy="11" r="8"/><path d="m21 21-4.35-4.35"/>
+  </svg>
+);
+const IconeWhatsApp = () => (
+  <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor">
+    <path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 00-3.48-8.413z"/>
+  </svg>
+);
+const IconeTelephone = () => (
+  <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+    <path d="M22 16.92v3a2 2 0 01-2.18 2 19.79 19.79 0 01-8.63-3.07A19.5 19.5 0 013.07 9.81a19.79 19.79 0 01-3.07-8.63A2 2 0 012 1h3a2 2 0 012 1.72c.127.96.361 1.903.7 2.81a2 2 0 01-.45 2.11L6.91 8.91a16 16 0 006.16 6.16l1.27-1.27a2 2 0 012.11-.45c.907.339 1.85.573 2.81.7A2 2 0 0122 16.92z"/>
+  </svg>
+);
+const IconeMessage = () => (
+  <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+    <path d="M21 15a2 2 0 01-2 2H7l-4 4V5a2 2 0 012-2h14a2 2 0 012 2z"/>
+  </svg>
+);
+const IconeEtoile = ({ pleine }) => (
+  <svg width="14" height="14" viewBox="0 0 24 24" fill={pleine ? "#F5A623" : "none"} stroke="#F5A623" strokeWidth="2">
+    <polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/>
+  </svg>
+);
+
+// ── Composant : Étoiles de notation ────────────────────────
+function Etoiles({ note }) {
+  // Affiche 5 étoiles avec remplissage selon la note
+  return (
+    <span style={{ display: "flex", gap: 2 }}>
+      {[1, 2, 3, 4, 5].map(i => (
+        <IconeEtoile key={i} pleine={i <= Math.round(note)} />
+      ))}
+    </span>
+  );
+}
+
+// ── Composant : Carte d'annonce ─────────────────────────────
+function CarteAnnonce({ annonce, t, onVoirProfil, onMessage }) {
+  // Affiche une annonce dans une carte cliquable
+  const [messageOuvert, setMessageOuvert] = useState(false);
+  const [texteMessage, setTexteMessage] = useState("");
+
+  // Couleur selon l'état du produit
+  const couleurEtat = {
+    neuf: "#16A34A",
+    occasion: "#D97706",
+    service: "#2563EB",
+  };
+
+  // Ouvre WhatsApp avec le numéro du vendeur
+  const ouvrirWhatsApp = () => {
+    const message = encodeURIComponent(`Bonjour, je suis intéressé(e) par votre annonce : "${annonce.titre}"`);
+    window.open(`https://wa.me/${annonce.telephone}?text=${message}`, "_blank");
+  };
+
+  // Appel téléphonique
+  const appeler = () => {
+    window.open(`tel:+${annonce.telephone}`);
+  };
+
+  return (
+    <div style={{
+      background: "#fff",
+      borderRadius: 16,
+      overflow: "hidden",
+      boxShadow: annonce.sponsorise
+        ? "0 4px 24px rgba(226,30,30,0.18)"
+        : "0 2px 12px rgba(0,0,0,0.08)",
+      border: annonce.sponsorise ? "2px solid #E01E1E" : "1px solid #F0F0F0",
+      transition: "transform 0.2s, box-shadow 0.2s",
+      position: "relative",
+    }}
+    onMouseEnter={e => e.currentTarget.style.transform = "translateY(-4px)"}
+    onMouseLeave={e => e.currentTarget.style.transform = "translateY(0)"}
+    >
+      {/* Badge sponsorisé */}
+      {annonce.sponsorise && (
+        <div style={{
+          position: "absolute", top: 10, right: 10, zIndex: 2,
+          background: "#E01E1E", color: "#fff",
+          fontSize: 11, fontWeight: 700, padding: "3px 10px",
+          borderRadius: 20, letterSpacing: 0.5,
+        }}>
+          ⭐ SPONSORISÉ
+        </div>
+      )}
+
+      {/* Zone image / emoji */}
+      <div style={{
+        background: "linear-gradient(135deg, #FFF3F0 0%, #FFE8E0 100%)",
+        height: 120,
+        display: "flex",
+        alignItems: "center",
+        justifyContent: "center",
+        fontSize: 56,
+      }}>
+        {annonce.emoji}
+      </div>
+
+      <div style={{ padding: "14px 16px 16px" }}>
+        {/* Titre */}
+        <div style={{ fontSize: 15, fontWeight: 700, color: "#1A1A1A", marginBottom: 6, lineHeight: 1.3 }}>
+          {annonce.titre}
+        </div>
+
+        {/* Prix */}
+        <div style={{ fontSize: 18, fontWeight: 800, color: "#E01E1E", marginBottom: 8 }}>
+          {annonce.prix.toLocaleString("fr-FR")} Kz
+        </div>
+
+        {/* Badges : ville, état, catégorie */}
+        <div style={{ display: "flex", gap: 6, flexWrap: "wrap", marginBottom: 10 }}>
+          <span style={{ background: "#F5F5F5", borderRadius: 8, padding: "2px 8px", fontSize: 12, color: "#555" }}>
+            📍 {annonce.ville}
+          </span>
+          <span style={{
+            background: couleurEtat[annonce.etat] + "1A",
+            color: couleurEtat[annonce.etat],
+            borderRadius: 8, padding: "2px 8px", fontSize: 12, fontWeight: 600,
+          }}>
+            {annonce.etat === "neuf" ? t.neuf : annonce.etat === "occasion" ? t.occasion : t.service}
+          </span>
+        </div>
+
+        {/* Vendeur + note */}
+        <div
+          style={{ display: "flex", alignItems: "center", justifyContent: "space-between", marginBottom: 12, cursor: "pointer" }}
+          onClick={() => onVoirProfil(annonce)}
+        >
+          <span style={{ fontSize: 13, color: "#666", textDecoration: "underline dotted" }}>
+            👤 {annonce.vendeur}
+          </span>
+          <div style={{ display: "flex", alignItems: "center", gap: 4 }}>
+            <Etoiles note={annonce.note} />
+            <span style={{ fontSize: 12, color: "#999" }}>({annonce.avis})</span>
+          </div>
+        </div>
+
+        {/* Boutons d'action */}
+        <div style={{ display: "flex", gap: 6 }}>
+          <button
+            onClick={appeler}
+            style={{
+              flex: 1, display: "flex", alignItems: "center", justifyContent: "center",
+              gap: 4, padding: "8px 4px", borderRadius: 10,
+              border: "1.5px solid #E01E1E", background: "#fff", color: "#E01E1E",
+              fontSize: 12, fontWeight: 600, cursor: "pointer",
+            }}
+          >
+            <IconeTelephone /> {t.appeler}
+          </button>
+          <button
+            onClick={ouvrirWhatsApp}
+            style={{
+              flex: 1, display: "flex", alignItems: "center", justifyContent: "center",
+              gap: 4, padding: "8px 4px", borderRadius: 10,
+              border: "none", background: "#25D366", color: "#fff",
+              fontSize: 12, fontWeight: 600, cursor: "pointer",
+            }}
+          >
+            <IconeWhatsApp /> {t.whatsapp}
+          </button>
+          <button
+            onClick={() => setMessageOuvert(!messageOuvert)}
+            style={{
+              flex: 1, display: "flex", alignItems: "center", justifyContent: "center",
+              gap: 4, padding: "8px 4px", borderRadius: 10,
+              border: "1.5px solid #1A1A1A", background: "#fff", color: "#1A1A1A",
+              fontSize: 12, fontWeight: 600, cursor: "pointer",
+            }}
+          >
+            <IconeMessage /> {t.message}
+          </button>
+        </div>
+
+        {/* Zone de message interne */}
+        {messageOuvert && (
+          <div style={{ marginTop: 10 }}>
+            <textarea
+              value={texteMessage}
+              onChange={e => setTexteMessage(e.target.value)}
+              placeholder="Votre message..."
+              rows={3}
+              style={{
+                width: "100%", borderRadius: 10, border: "1.5px solid #DDD",
+                padding: "8px 10px", fontSize: 13, resize: "none",
+                fontFamily: "inherit", boxSizing: "border-box",
+              }}
+            />
+            <button
+              onClick={() => { alert("Message envoyé !"); setMessageOuvert(false); setTexteMessage(""); }}
+              style={{
+                marginTop: 6, width: "100%", background: "#1A1A1A",
+                color: "#fff", border: "none", borderRadius: 10,
+                padding: "9px", fontSize: 13, fontWeight: 600, cursor: "pointer",
+              }}
+            >
+              {t.envoyer}
+            </button>
+          </div>
+        )}
+      </div>
+    </div>
+  );
+}
+
+// ── Page : Accueil ──────────────────────────────────────────
+function PageAccueil({ t, annonces, setPage, setFiltres, filtres, onVoirProfil, logoUrl }) {
+  // Annonces sponsorisées (mises en avant)
+  const sponsorisees = annonces.filter(a => a.sponsorise);
+  // Annonces récentes non sponsorisées
+  const recentes = annonces.filter(a => !a.sponsorise);
+
+  return (
+    <div>
+      {/* ── Hero section ───────────────────────── */}
+      <div style={{
+        background: "linear-gradient(135deg, #1A1A1A 0%, #2D0A0A 50%, #E01E1E 100%)",
+        padding: "60px 24px 50px",
+        textAlign: "center",
+        color: "#fff",
+      }}>
+        <img src={logoUrl} alt="AngoMarket" style={{ width: 90, marginBottom: 16, borderRadius: 16 }} />
+        <h1 style={{ fontSize: 28, fontWeight: 900, margin: "0 0 10px", lineHeight: 1.2 }}>
+          {t.hero1}
+        </h1>
+        <p style={{ fontSize: 16, color: "#FFB3A7", margin: "0 0 28px", maxWidth: 380, mar
